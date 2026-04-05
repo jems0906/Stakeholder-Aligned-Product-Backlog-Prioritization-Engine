@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stakeholder-Aligned Feature Delivery Simulator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Project 2 · Product Backlog Prioritization Tool</p>
+        <h1>Stakeholder-Aligned Feature Delivery Simulator</h1>
+        <p class="hero-copy">
+          Prioritize stakeholder requests with RICE scoring, delivery forecasting,
+          dependency-aware planning, and ready-to-share Jira/Confluence exports.
+        </p>
+      </div>
+      <div class="hero-badges">
+        <span>⚖️ Interactive RICE matrix</span>
+        <span>🗺️ Gantt-style roadmap</span>
+        <span>📋 Auto-generated user stories</span>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Request intake</p>
+            <h2>Add stakeholder request</h2>
+          </div>
+          <div class="pill">Live portfolio simulation</div>
+        </div>
+
+        <form id="requestForm" class="request-form">
+          <label>
+            Feature / request title
+            <input id="title" name="title" type="text" placeholder="Add approval workflows" required />
+          </label>
+
+          <label>
+            Work type
+            <select id="type" name="type">
+              <option value="feature">Feature</option>
+              <option value="bug">Bug</option>
+              <option value="tech debt">Tech debt</option>
+            </select>
+          </label>
+
+          <label>
+            Business value ($k)
+            <input id="businessValue" name="businessValue" type="number" min="1" step="0.1" value="24" required />
+          </label>
+
+          <label>
+            Effort (story points)
+            <input id="effort" name="effort" type="number" min="1" max="13" value="5" required />
+          </label>
+
+          <label>
+            Reach (1–10)
+            <input id="reach" name="reach" type="number" min="1" max="10" step="1" value="6" required />
+          </label>
+
+          <label>
+            Impact (1–5)
+            <input id="impact" name="impact" type="number" min="1" max="5" step="0.1" value="3.8" required />
+          </label>
+
+          <label>
+            Confidence (0.1–1.0)
+            <input id="confidence" name="confidence" type="number" min="0.1" max="1" step="0.01" value="0.8" required />
+          </label>
+
+          <label class="full-span">
+            Dependencies
+            <select id="dependencies" name="dependencies" multiple></select>
+            <small>Hold Ctrl / Cmd to select multiple predecessor requests.</small>
+          </label>
+
+          <button class="primary-button" type="submit">Add to backlog</button>
+        </form>
+      </section>
+
+      <section class="grid two-column">
+        <div class="panel">
+          <div class="section-heading compact">
+            <div>
+              <p class="section-kicker">Portfolio view</p>
+              <h2>Prioritized backlog</h2>
+            </div>
+            <div id="portfolioSummary" class="summary-chip"></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Type</th>
+                  <th>Deps</th>
+                  <th>RICE</th>
+                  <th>ROI</th>
+                  <th>Delivery</th>
+                  <th>Risk</th>
+                </tr>
+              </thead>
+              <tbody id="backlogTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel emphasis">
+          <div class="section-heading compact">
+            <div>
+              <p class="section-kicker">Recommended next bet</p>
+              <h2>Executive summary</h2>
+            </div>
+          </div>
+          <div id="highlightCard"></div>
+        </div>
+      </section>
+
+      <section class="grid two-column">
+        <div class="panel">
+          <div class="section-heading compact">
+            <div>
+              <p class="section-kicker">Scoring</p>
+              <h2>RICE prioritization matrix</h2>
+            </div>
+          </div>
+          <div class="matrix-legend">
+            <span><strong>X:</strong> Effort</span>
+            <span><strong>Y:</strong> Impact</span>
+            <span><strong>Bubble size:</strong> Reach</span>
+          </div>
+          <div id="riceMatrix" class="matrix"></div>
+        </div>
+
+        <div class="panel">
+          <div class="section-heading compact">
+            <div>
+              <p class="section-kicker">Scenario planning</p>
+              <h2>What-if planner</h2>
+            </div>
+          </div>
+
+          <form id="scenarioForm" class="scenario-form">
+            <label>
+              Delay this request
+              <select id="scenarioItem"></select>
+            </label>
+            <label>
+              By how many sprints?
+              <select id="scenarioDelay">
+                <option value="0">No delay</option>
+                <option value="1">1 sprint</option>
+                <option value="2">2 sprints</option>
+                <option value="3">3 sprints</option>
+              </select>
+            </label>
+            <button type="button" id="resetScenario" class="secondary-button">Reset scenario</button>
+          </form>
+
+          <div id="scenarioImpact" class="scenario-impact"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-heading compact">
+          <div>
+            <p class="section-kicker">Delivery plan</p>
+            <h2>Gantt-style roadmap</h2>
+          </div>
+        </div>
+        <div id="roadmap"></div>
+      </section>
+
+      <section class="grid two-column">
+        <div class="panel">
+          <div class="section-heading compact">
+            <div>
+              <p class="section-kicker">Generated output</p>
+              <h2>User stories & sprint assignments</h2>
+            </div>
+          </div>
+          <div id="storiesSummary" class="summary-card"></div>
+          <div id="storyList" class="story-list"></div>
+        </div>
+
+        <div class="panel">
+          <div class="section-heading compact">
+            <div>
+              <p class="section-kicker">Shareable artifacts</p>
+              <h2>Export to Jira / Confluence</h2>
+            </div>
+          </div>
+
+          <div class="export-controls">
+            <button class="primary-button" data-export="jira" type="button">Preview Jira format</button>
+            <button class="secondary-button" data-export="confluence" type="button">Preview Confluence format</button>
+            <button class="secondary-button" id="copyExport" type="button">Copy export text</button>
+            <button class="secondary-button" id="downloadExport" type="button">Download .txt</button>
+          </div>
+
+          <pre id="exportOutput" class="export-output"></pre>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      Built for roadmap planning, dependency forecasting, and stakeholder alignment.
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
