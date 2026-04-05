@@ -31,6 +31,18 @@ npm run dev
 ```
 Then open `http://127.0.0.1:5173/`.
 
+## Deploy to Render
+
+This repo includes a root-level `render.yaml` configured for a **Render Static Site** using the React app in `react-app/`.
+
+### Render settings
+- **Service type:** Static Site
+- **Root directory:** `react-app`
+- **Build command:** `npm install && npm run build`
+- **Publish directory:** `dist`
+
+After connecting the GitHub repo in Render, it can deploy directly from the blueprint.
+
 ## Suggested demo scenario
 
 - Select **Add approval workflows** in the backlog.
