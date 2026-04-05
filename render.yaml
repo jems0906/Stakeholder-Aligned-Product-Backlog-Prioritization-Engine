@@ -2,7 +2,6 @@ services:
   - type: web
     name: stakeholder-aligned-backlog-simulator
     runtime: static
-    plan: free
     rootDir: react-app
     buildCommand: npm install && npm run build
     staticPublishPath: dist
